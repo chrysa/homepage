@@ -1,0 +1,36 @@
+/* custom.css — identité visuelle de la vitrine ducal.me
+ * Monté dans /app/config/custom.css (référencé par settings: customCSS).
+ * Accent routage teal + neutres ardoise, cohérent avec l'audit de la vitrine. */
+
+:root {
+  --ducal-accent: 172 84% 34%;   /* teal */
+  --ducal-warn:   32 74% 45%;    /* ambre — signaux */
+}
+
+/* En-tête : titre en display technique */
+#information-widgets,
+.font-medium {
+  letter-spacing: -0.01em;
+}
+
+/* Groupes de services : liseré d'accent discret, pas une carte partout */
+.services-group > h2 {
+  border-left: 3px solid hsl(var(--ducal-accent));
+  padding-left: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+}
+
+/* Tuile hors-ligne : signal ambre lisible en dark */
+.status-error,
+.status-down {
+  color: hsl(var(--ducal-warn)) !important;
+}
+
+/* Focus clavier visible (accessibilité) */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid hsl(var(--ducal-accent));
+  outline-offset: 2px;
+}
