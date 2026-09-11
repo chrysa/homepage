@@ -1,0 +1,45 @@
+# Patron d'annotations qu'un PRODUIT pose sur SON Ingress.
+# Objectif : apparaître dans la vitrine Homepage + être gaté par groupe LDAP,
+# sans jamais ouvrir de PR contre le repo d'infra.
+#
+# Homepage découvre ce service via son ClusterRole (lecture des Ingress).
+# Le forward-auth Traefik + LDAP gère l'accès ; Homepage ne fait qu'afficher.
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: exemple-produit
+  namespace: exemple-produit
+  annotations:
+    # --- Entrée + auth (couche maître) --------------------------------------
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    # forward-auth LDAP + en-têtes de sécurité, fournis par l'infra :
+    traefik.ingress.kubernetes.io/router.middlewares: >-
+      infra-forwardauth-auth@kubernetescrd,infra-security-headers@kubernetescrd
+
+    # --- Déclaration de la tuile Homepage (côté PRODUIT) --------------------
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: "Exemple produit"
+    gethomepage.dev/group: "Produits"          # regroupe la tuile (cf. settings)
+    gethomepage.dev/icon: "si-kubernetes"
+    gethomepage.dev/description: "Surface métier du produit exemple"
+    gethomepage.dev/href: "https://exemple.ducal.me"
+    # Statut up/down affiché par la vitrine :
+    gethomepage.dev/siteMonitor: "https://exemple.ducal.me"
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: ["exemple.ducal.me"]
+      secretName: exemple-produit-tls  # pragma: allowlist secret
+  rules:
+    - host: exemple.ducal.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: exemple-produit
+                port:
+                  number: 80
