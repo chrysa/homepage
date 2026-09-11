@@ -1,0 +1,17 @@
+# Template settings.yaml — titre dérivé du domaine racine, aucun nom en dur.
+---
+title: "Estate ${ROOT_DOMAIN}"
+theme: dark
+color: slate
+headerStyle: clean
+target: _blank
+layout:
+  Infra:
+    style: row
+    columns: 4
+  Produits:
+    style: row
+    columns: 4
+# Auth faite en amont (forward-auth Traefik + LDAP). Cette instance est gatée
+# pour le groupe ${PORTAL_LDAP_GROUP}.
+providers: {}

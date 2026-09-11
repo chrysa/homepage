@@ -1,0 +1,25 @@
+# Template — widget d'état d'une surface métier, en lecture seule.
+# L'URL se dérive de la zone (aucun domaine en dur) ; le token vient d'un Secret via env.
+---
+- Audit:
+    - ${FLEET_ZONE_NAME}:
+        icon: si-checkmarx
+        href: "https://${FLEET_ZONE_DOMAIN}"
+        siteMonitor: "https://${FLEET_ZONE_DOMAIN}"
+        widget:
+          type: customapi
+          url: "https://${FLEET_ZONE_DOMAIN}${FLEET_PATH}"
+          method: GET
+          headers:
+            Authorization: "Bearer {{${WIDGET_TOKEN_ENV}}}"
+          refreshInterval: 60000
+          mappings:
+            - field: projects
+              label: Projets
+              format: number
+            - field: findings_high
+              label: Findings hauts
+              format: number
+            - field: compliant_ratio
+              label: Conformité
+              format: percent

@@ -1,0 +1,44 @@
+# estate.values.example.yaml — SEULE source des valeurs. Rien en dur ailleurs.
+# Copier en estate.values.yaml (git-ignored) et renseigner. Les domaines ci-dessous
+# sont des EXEMPLES (RFC 2606 .test), jamais des valeurs de production.
+---
+# Domaine racine : ne porte que des délégations, aucun enregistrement produit.
+rootDomain: "${ROOT_DOMAIN}"        # ex. root.test
+
+# Contrat d'infra (fourni par la couche maître, pas inventé ici) :
+infra:
+  authMiddleware: "${AUTH_MIDDLEWARE}"          # ex. infra-forwardauth-auth@kubernetescrd
+  securityMiddleware: "${SECURITY_MIDDLEWARE}"  # ex. infra-security-headers@kubernetescrd
+  clusterIssuer: "${CLUSTER_ISSUER}"            # ex. letsencrypt
+  ingressClass: "${INGRESS_CLASS}"              # ex. traefik
+
+# N zones produit. Ajouter un domaine = ajouter une entrée, rien d'autre à toucher.
+zones:
+  - name: produit-a
+    domain: "produit-a.example.test"   # exemple
+    ldapGroup: "admins"
+  - name: produit-b
+    domain: "produit-b.example.test"   # exemple
+    ldapGroup: "developers"
+  # - name: produit-c
+  #   domain: "produit-c.other.test"
+  #   ldapGroup: "team-c"
+
+# Optionnel : une instance de vitrine par tiers, pour isoler la visibilité par zone.
+portalInstances:
+  - name: portal-admins
+    host: "portal-admins.${ROOT_DOMAIN}"
+    ldapGroup: "admins"
+    groupsShown: ["Infra", "Produits"]
+  # - name: portal-team-c
+  #   host: "portal-team-c.${ROOT_DOMAIN}"
+  #   ldapGroup: "team-c"
+  #   groupsShown: ["Produits"]
+
+# Widgets d'état : le token vient d'un Secret via env, jamais écrit ici.
+widgets:
+  fleet:
+    enabled: false
+    urlFromZone: produit-a          # l'URL se dérive de zones[].domain
+    path: "/api/v1/fleet/summary"
+    tokenEnv: "${WIDGET_TOKEN_ENV}" # ex. HOMEPAGE_VAR_FLEET_TOKEN
