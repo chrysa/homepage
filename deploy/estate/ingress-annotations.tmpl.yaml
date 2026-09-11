@@ -1,0 +1,36 @@
+# Template — rendu par zone via render.sh (envsubst) ou par un chart Helm.
+# Aucun domaine en dur : tout vient des valeurs. Un PRODUIT pose ceci sur SON Ingress.
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${ZONE_NAME}
+  namespace: ${ZONE_NAME}
+  annotations:
+    cert-manager.io/cluster-issuer: ${CLUSTER_ISSUER}
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    # Auth + en-têtes fournis par le contrat d'infra :
+    traefik.ingress.kubernetes.io/router.middlewares: ${AUTH_MIDDLEWARE},${SECURITY_MIDDLEWARE}
+
+    # Tuile Homepage — déclarée côté produit, découverte par le ClusterRole :
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: ${ZONE_NAME}
+    gethomepage.dev/group: "Produits"
+    gethomepage.dev/href: "https://${ZONE_DOMAIN}"
+    gethomepage.dev/siteMonitor: "https://${ZONE_DOMAIN}"
+spec:
+  ingressClassName: ${INGRESS_CLASS}
+  tls:
+    - hosts: ["${ZONE_DOMAIN}"]
+      secretName: ${ZONE_NAME}-tls  # pragma: allowlist secret
+  rules:
+    - host: ${ZONE_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ${ZONE_NAME}
+                port:
+                  number: 80
