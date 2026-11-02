@@ -16,6 +16,8 @@ on:
 
 env:
   IMAGE_NAME: ${{ github.repository }}
+  # Docker Hub namespace is the owner account chrys4 (cockpit Q-W04-04, 2026-11-01).
+  DOCKERHUB_IMAGE: chrys4/${{ github.event.repository.name }}
 
 permissions: {}
 
@@ -39,7 +41,7 @@ jobs:
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6
         with:
           images: |
-            ${{ env.IMAGE_NAME }}
+            docker.io/${{ env.DOCKERHUB_IMAGE }}
             ghcr.io/${{ env.IMAGE_NAME }}
           tags: |
             # Default tags
